@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  php-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-dev
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+
+  php:
+    image: php:8.1-fpm-alpine
+    volumes:
+      - ./src:/var/www/html

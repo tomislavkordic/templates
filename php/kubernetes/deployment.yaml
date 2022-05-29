@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: php-app
+  template:
+    metadata:
+      labels:
+        app: php-app
+    spec:
+      initContainers:
+        - name: init-php-app
+          image: tkordic/php-app:latest
+          volumeMounts:
+            - name: php-app-data
+              mountPath: /data
+          command: [cp, -a, /var/www/html/., /data]
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      containers:
+        - name: php-app
+          image: tkordic/php-app:latest
+          volumeMounts:
+            - name: php-app-data
+              mountPath: /var/www/html
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+        - name: php
+          image: php:8.1-fpm-alpine
+          volumeMounts:
+            - name: php-app-data
+              mountPath: /var/www/html
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      volumes:
+        - name: php-app-data
+          emptyDir: {}

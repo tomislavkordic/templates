@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nuxt-server-app-service
+spec:
+  selector:
+    app: nuxt-server-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

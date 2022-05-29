@@ -1,0 +1,18 @@
+FROM golang:1.18-bullseye
+
+RUN go install github.com/githubnemo/CompileDaemon@master
+RUN go install github.com/go-delve/delve/cmd/dlv@master
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download -x
+
+COPY . ./
+
+EXPOSE 2345 8080
+
+ENTRYPOINT ["CompileDaemon", "-exclude-dir=.git", "-graceful-kill=true", \
+            "-build", "go build -gcflags=\"all=-N-l\" -o ./main.o", \
+            "-command", "dlv exec --accept-multiclient --api-version=2 --continue --headless --listen=:2345 ./main.o" \
+]
